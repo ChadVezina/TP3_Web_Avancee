@@ -17,6 +17,18 @@
         </div>
         {% endif %}
 
+        {% if app.request.query.get('error') == 'security' %}
+        <div class="form-error">
+            <p>🚨 Activité suspecte détectée. Votre session a été fermée par mesure de sécurité.</p>
+        </div>
+        {% endif %}
+
+        {% if app.request.query.get('error') == 'timeout' %}
+        <div class="form-error">
+            <p>⏰ Votre session a expiré. Veuillez vous reconnecter.</p>
+        </div>
+        {% endif %}
+
         <form method="post">
             <div class="form-group">
                 <label for="username">👤 Username</label>

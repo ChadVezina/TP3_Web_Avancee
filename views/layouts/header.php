@@ -14,17 +14,29 @@
 <body>
     <header>
         <nav>
+            {% if logged_in and auth_privilege_id == 1 %}
+            <a href="{{base}}/activity-logs" class="nav-brand">
+                <span class="logo">📝</span>
+                <span>The Modern Blogger</span>
+            </a>
+            {% else %}
             <a href="{{base}}" class="nav-brand">
                 <span class="logo">📝</span>
                 <span>The Modern Blogger</span>
             </a>
+            {% endif %}
 
             <div class="nav-center">
                 <ul class="nav-links">
                     <li><a href="{{base}}/posts">📚 Posts</a></li>
+                    {% if logged_in %}
                     <li><a href="{{base}}/categories">📁 Categories</a></li>
+                    {% endif %}
                     {% if logged_in %}
                     <li><a href="{{base}}/post/create">✍️ Write</a></li>
+                    {% endif %}
+                    {% if logged_in and auth_privilege_id == 1 %}
+                    <li><a href="{{base}}/activity-logs">📊 Journal de bord</a></li>
                     {% endif %}
                 </ul>
             </div>

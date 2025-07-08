@@ -5,19 +5,26 @@ namespace App\Controllers;
 use App\Providers\View;
 use App\Providers\Validator;
 use App\Providers\Auth;
+use App\Providers\SecurityMiddleware;
 use App\Models\Category;
 use App\Models\Post;
 
 class CategoryController
 {
-    
-    public function __construct(){
+    /**
+     * Vérification des privilèges pour les opérations CRUD
+     */
+    private function requireCrudPrivileges()
+    {
         Auth::requireAuth();
-        Auth::privilege(2);
+        Auth::privilege(2); // Modérateur ou Admin
     }
 
     public function index()
     {
+        // Vue des catégories: Connexion Requise
+        Auth::requireAuth();
+
         $category = new Category();
         $categories = $category->select();
         return View::render('category/index', ['categories' => $categories]);
@@ -25,6 +32,9 @@ class CategoryController
 
     public function show($data)
     {
+        // Vue des catégories: Connexion Requise
+        Auth::requireAuth();
+
         if (isset($data['id']) && $data['id'] != null) {
             $category = new Category();
             $selectedCategory = $category->selectId($data['id']);
@@ -38,6 +48,103 @@ class CategoryController
                 ]);
             } else {
                 return View::render('error', ['message' => 'Category not found!']);
+            }
+        } else {
+            return View::render('error', ['message' => '404 not found!']);
+        }
+    }
+
+    public function create()
+    {
+        // CRUD des catégories: Modérateur et Admin
+        $this->requireCrudPrivileges();
+
+        return View::render('category/create');
+    }
+
+    public function store($data)
+    {
+        // CRUD des catégories: Modérateur et Admin
+        $this->requireCrudPrivileges();
+
+        $validator = new Validator();
+        $validator->field('name', $data['name'])->min(2)->max(100)->required();
+
+        if ($validator->isSuccess()) {
+            $category = new Category();
+            $insertCategory = $category->insert($data);
+            if ($insertCategory) {
+                SecurityMiddleware::logCrudOperation('création', 'catégorie', $insertCategory);
+                return View::redirect('categories');
+            } else {
+                return View::render('error', ['message' => 'Could not create category!']);
+            }
+        } else {
+            $errors = $validator->getErrors();
+            return View::render('category/create', ['errors' => $errors, 'category' => $data]);
+        }
+    }
+
+    public function edit($data)
+    {
+        // CRUD des catégories: Modérateur et Admin
+        $this->requireCrudPrivileges();
+
+        if (isset($data['id']) && $data['id'] != null) {
+            $category = new Category();
+            $selectedCategory = $category->selectId($data['id']);
+            if ($selectedCategory) {
+                return View::render('category/edit', ['category' => $selectedCategory]);
+            } else {
+                return View::render('error', ['message' => 'Category not found!']);
+            }
+        } else {
+            return View::render('error', ['message' => '404 not found!']);
+        }
+    }
+
+    public function update($data, $params)
+    {
+        // CRUD des catégories: Modérateur et Admin
+        $this->requireCrudPrivileges();
+
+        if (isset($params['id']) && $params['id'] != null) {
+            $validator = new Validator();
+            $validator->field('name', $data['name'])->min(2)->max(100)->required();
+
+            if ($validator->isSuccess()) {
+                $category = new Category();
+                $updateCategory = $category->update($data, $params['id']);
+                if ($updateCategory) {
+                    SecurityMiddleware::logCrudOperation('modification', 'catégorie', $params['id']);
+                    return View::redirect('categories');
+                } else {
+                    return View::render('error', ['message' => 'Could not update category!']);
+                }
+            } else {
+                $errors = $validator->getErrors();
+                $category = new Category();
+                $selectedCategory = $category->selectId($params['id']);
+                return View::render('category/edit', ['errors' => $errors, 'category' => array_merge($selectedCategory, $data)]);
+            }
+        } else {
+            return View::render('error', ['message' => '404 not found!']);
+        }
+    }
+
+    public function delete($data)
+    {
+        // CRUD des catégories: Modérateur et Admin
+        $this->requireCrudPrivileges();
+
+        if (isset($data['id']) && $data['id'] != null) {
+            $category = new Category();
+            $deleteCategory = $category->delete($data['id']);
+            if ($deleteCategory) {
+                SecurityMiddleware::logCrudOperation('suppression', 'catégorie', $data['id']);
+                return View::redirect('categories');
+            } else {
+                return View::render('error', ['message' => 'Could not delete category!']);
             }
         } else {
             return View::render('error', ['message' => '404 not found!']);
@@ -58,93 +165,5 @@ class CategoryController
         $stmt->execute();
 
         return $stmt->fetchAll();
-    }
-
-    public function create()
-    {
-        return View::render('category/create');
-    }
-
-    public function store($data)
-    {
-        $validator = new Validator();
-        $validator->field('name', $data['name'])->min(2)->max(100)->required();
-
-        if ($validator->isSuccess()) {
-            $category = new Category();
-            $insertCategory = $category->insert($data);
-            if ($insertCategory) {
-                return View::redirect('categories');
-            } else {
-                return View::render('error', ['message' => 'Could not create category!']);
-            }
-        } else {
-            $errors = $validator->getErrors();
-            return View::render('category/create', ['errors' => $errors, 'category' => $data]);
-        }
-    }
-
-    public function edit($data)
-    {
-        if (isset($data['id']) && $data['id'] != null) {
-            $category = new Category();
-            $selectedCategory = $category->selectId($data['id']);
-            if ($selectedCategory) {
-                return View::render('category/edit', ['category' => $selectedCategory]);
-            } else {
-                return View::render('error', ['message' => 'Category not found!']);
-            }
-        } else {
-            return View::render('error', ['message' => '404 not found!']);
-        }
-    }
-
-    public function update($data, $params)
-    {
-        if (isset($params['id']) && $params['id'] != null) {
-            $validator = new Validator();
-            $validator->field('name', $data['name'])->min(2)->max(100)->required();
-
-            if ($validator->isSuccess()) {
-                $category = new Category();
-                $updateCategory = $category->update($data, $params['id']);
-                if ($updateCategory) {
-                    return View::redirect('categories');
-                } else {
-                    return View::render('error', ['message' => 'Could not update category!']);
-                }
-            } else {
-                $errors = $validator->getErrors();
-                $category = new Category();
-                $selectedCategory = $category->selectId($params['id']);
-                return View::render('category/edit', ['errors' => $errors, 'category' => array_merge($selectedCategory, $data)]);
-            }
-        } else {
-            return View::render('error', ['message' => '404 not found!']);
-        }
-    }
-
-    public function delete($data)
-    {
-        if (Auth::has_privilege(1)) {
-            if (isset($data['id']) && $data['id'] != null) {
-                $post = new Post();
-                $postsInCategory = $this->getPostsByCategory($post, $data['id']);
-                if (!empty($postsInCategory)) {
-                    return View::render('error', [
-                        'message' => 'Cannot delete category because it contains ' . count($postsInCategory) . ' post(s). Please delete or move the posts first.'
-                    ]);
-                }
-                $category = new Category();
-                $deleteCategory = $category->delete($data['id']);
-                if ($deleteCategory) {
-                    return View::redirect('categories');
-                } else {
-                    return View::render('error', ['message' => 'Could not delete category!']);
-                }
-            } else {
-                return View::render('error', ['message' => '404 not found!']);
-            }
-        }
     }
 }

@@ -30,18 +30,7 @@
 
             <div class="form-group">
                 <label for="password">🔒 Password</label>
-                <input type="password" id="password" name="password" placeholder="Create a secure password (min 6 characters)" required>
-            </div>
-
-            <div class="form-group">
-                <label for="privilege_id">Privilege</label>
-                <select id="privilege_id" name="privilege_id">
-                    {% for privilege in privileges %}
-                        {% if privilege.id >= auth_privilege_id %}
-                            <option value="{{ privilege.id }}" {% if privilege.id  == auth_privilege_id %} selected {% endif %}>{{ privilege.privilege }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
+                <input type="password" id="password" name="password" placeholder="Create a secure password (min 8 characters)" required>
             </div>
 
             <div class="form-actions">

@@ -5,18 +5,16 @@ namespace App\Controllers;
 use App\Providers\View;
 use App\Providers\Validator;
 use App\Providers\Auth;
+use App\Providers\SecurityMiddleware;
 use App\Models\Comment;
 
 class CommentController
 {
-
-    public function __construct(){
-        Auth::requireAuth();
-        Auth::privilege(4);
-    }
-
     public function store($data)
     {
+        // Commentaires: Connexion Requise
+        Auth::requireAuth();
+
         $validator = new Validator();
         $validator->field('content', $data['content'])->min(3)->max(1000)->required();
         $validator->field('post_id', $data['post_id'])->required();
@@ -28,6 +26,7 @@ class CommentController
             $data['created_at'] = date('Y-m-d H:i:s');
             $insertComment = $comment->insert($data);
             if ($insertComment) {
+                SecurityMiddleware::logCrudOperation('création', 'commentaire', $insertComment);
                 return View::redirect('post/show?id=' . $data['post_id']);
             } else {
                 return View::render('error', ['message' => 'Could not create comment!']);
@@ -39,25 +38,30 @@ class CommentController
 
     public function delete($data)
     {
-        if (Auth::has_privilege(3)) {
-            if (isset($data['id']) && isset($data['post_id'])) {
-                $comment = new Comment();
-                $selectedComment = $comment->selectId($data['id']);
+        Auth::requireAuth();
 
-                if ($selectedComment && $selectedComment['user_id'] == Auth::id()) {
-                    $deleteComment = $comment->delete($data['id']);
+        if (isset($data['id']) && isset($data['post_id'])) {
+            $comment = new Comment();
+            $selectedComment = $comment->selectId($data['id']);
 
-                    if ($deleteComment) {
-                        return View::redirect('post/show?id=' . $data['post_id']);
-                    } else {
-                        return View::render('error', ['message' => 'Could not delete comment!']);
-                    }
+            // Allow deletion if user owns the comment OR has moderator/admin privileges
+            if (
+                $selectedComment &&
+                ($selectedComment['user_id'] == Auth::id() || Auth::has_privilege(2))
+            ) {
+                $deleteComment = $comment->delete($data['id']);
+
+                if ($deleteComment) {
+                    SecurityMiddleware::logCrudOperation('suppression', 'commentaire', $data['id']);
+                    return View::redirect('post/show?id=' . $data['post_id']);
                 } else {
-                    return View::render('error', ['message' => 'Comment not found or unauthorized!']);
+                    return View::render('error', ['message' => 'Could not delete comment!']);
                 }
             } else {
-                return View::render('error', ['message' => 'Invalid request!']);
+                return View::render('error', ['message' => 'Unauthorized to delete this comment!']);
             }
+        } else {
+            return View::render('error', ['message' => '404 not found!']);
         }
     }
 }

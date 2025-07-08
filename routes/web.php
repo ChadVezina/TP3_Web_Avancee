@@ -32,9 +32,18 @@ Route::post('/category/delete', 'CategoryController@delete');
 Route::get('/user/create', 'UserController@create');
 Route::post('/user/create', 'UserController@store');
 
+// Admin user creation routes
+Route::get('/user/admin-create', 'UserController@adminCreate');
+Route::post('/user/admin-create', 'UserController@adminStore');
+
 // Auth routes
 Route::get('/login', 'AuthController@index');
 Route::post('/login', 'AuthController@store');
 Route::get('/logout', 'AuthController@delete');
+
+// Activity Log routes (Admin only)
+Route::get('/activity-logs', 'ActivityLogController@index');
+Route::get('/activity-logs/clear', 'ActivityLogController@clear');
+Route::post('/activity-logs/clear', 'ActivityLogController@clear');
 
 Route::dispatch();

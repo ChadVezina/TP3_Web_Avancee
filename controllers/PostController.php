@@ -5,20 +5,34 @@ namespace App\Controllers;
 use App\Providers\View;
 use App\Providers\Validator;
 use App\Providers\Auth;
+use App\Providers\SecurityMiddleware;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Comment;
 
 class PostController
 {
-
-    public function construct(){
+    /**
+     * Vérification des privilèges pour les opérations CRUD
+     */
+    private function requireCrudPrivileges()
+    {
         Auth::requireAuth();
-        Auth::privilege(3);
+        Auth::privilege(3); // Utilisateur, Modérateur ou Admin
+    }
+
+    /**
+     * Vérification des privilèges pour les opérations de modération (edit/delete)
+     */
+    private function requireModerationPrivileges()
+    {
+        Auth::requireAuth();
+        Auth::privilege(2); // Modérateur ou Admin seulement
     }
 
     public function index()
     {
+        // Vue publique - aucune connexion requise
         $post = new Post();
         $posts = $post->selectAllWithRelations('id', 'desc');
         return View::render('post/index', ['posts' => $posts]);
@@ -26,6 +40,7 @@ class PostController
 
     public function show($data)
     {
+        // Vue publique - aucune connexion requise
         if (isset($data['id']) && $data['id'] != null) {
             $post = new Post();
             $selectedPost = $post->selectWithRelations($data['id']);
@@ -47,7 +62,9 @@ class PostController
 
     public function create()
     {
-        self::construct();
+        // Création - Tous les utilisateurs connectés
+        $this->requireCrudPrivileges();
+
         $category = new Category();
         $categories = $category->select();
         return View::render('post/create', ['categories' => $categories]);
@@ -55,7 +72,9 @@ class PostController
 
     public function store($data)
     {
-        self::construct();
+        // Création - Tous les utilisateurs connectés
+        $this->requireCrudPrivileges();
+
         $validator = new Validator();
         $validator->field('title', $data['title'])->min(2)->max(255)->required();
         $validator->field('content', $data['content'])->min(10)->required();
@@ -68,6 +87,7 @@ class PostController
             $data['created_at'] = date('Y-m-d H:i:s');
             $insertPost = $post->insert($data);
             if ($insertPost) {
+                SecurityMiddleware::logCrudOperation('création', 'post', $insertPost);
                 return View::redirect('post/show?id=' . $insertPost);
             } else {
                 return View::render('error', ['message' => 'Could not create post!']);
@@ -82,7 +102,9 @@ class PostController
 
     public function edit($data)
     {
-        self::construct();
+        // Modification - Modérateur et Admin seulement
+        $this->requireModerationPrivileges();
+
         if (isset($data['id']) && $data['id'] != null) {
             $post = new Post();
             $selectedPost = $post->selectId($data['id']);
@@ -100,7 +122,9 @@ class PostController
 
     public function update($data, $params)
     {
-        self::construct();
+        // Modification - Modérateur et Admin seulement
+        $this->requireModerationPrivileges();
+
         if (isset($params['id']) && $params['id'] != null) {
             $validator = new Validator();
             $validator->field('title', $data['title'])->min(2)->max(255)->required();
@@ -111,6 +135,7 @@ class PostController
                 $post = new Post();
                 $updatePost = $post->update($data, $params['id']);
                 if ($updatePost) {
+                    SecurityMiddleware::logCrudOperation('modification', 'post', $params['id']);
                     return View::redirect('post/show?id=' . $params['id']);
                 } else {
                     return View::render('error', ['message' => 'Could not update post!']);
@@ -130,21 +155,26 @@ class PostController
 
     public function delete($data)
     {
-        if (Auth::has_privilege(2)) {
-            if (isset($data['id']) && $data['id'] != null) {
-                $comment = new Comment();
-                $this->deleteCommentsByPostId($comment, $data['id']);
+        // Suppression - Modérateur et Admin seulement
+        $this->requireModerationPrivileges();
 
-                $post = new Post();
-                $deletePost = $post->delete($data['id']);
-                if ($deletePost) {
-                    return View::redirect('posts');
-                } else {
-                    return View::render('error', ['message' => 'Could not delete post!']);
-                }
+        if (isset($data['id']) && $data['id'] != null) {
+            $post = new Post();
+            $comment = new Comment();
+
+            // Delete associated comments first
+            $this->deleteCommentsByPostId($comment, $data['id']);
+
+            // Delete the post
+            $deletePost = $post->delete($data['id']);
+            if ($deletePost) {
+                SecurityMiddleware::logCrudOperation('suppression', 'post', $data['id']);
+                return View::redirect('posts');
             } else {
-                return View::render('error', ['message' => '404 not found!']);
+                return View::render('error', ['message' => 'Could not delete post!']);
             }
+        } else {
+            return View::render('error', ['message' => '404 not found!']);
         }
     }
 

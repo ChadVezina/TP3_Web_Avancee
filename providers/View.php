@@ -17,6 +17,7 @@ class View
         $twig->addGlobal('logged_in', Auth::check());
         $twig->addGlobal('auth_user_id', Auth::id());
         $twig->addGlobal('auth_privilege_id', Auth::privilege_id());
+        $twig->addGlobal('current_user', Auth::username());
         $twig->addGlobal('session', $_SESSION);
         echo $twig->render("{$template}.php", $data);
     }
