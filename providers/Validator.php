@@ -6,7 +6,7 @@ namespace App\Providers;
 class Validator
 {
 
-    private $errors = array();
+    private $errors = [];
     private $key;
     private $value;
     private $name;

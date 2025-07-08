@@ -9,10 +9,14 @@ use App\Models\Comment;
 
 class CommentController
 {
+
+    public function __construct(){
+        Auth::requireAuth();
+        Auth::privilege(4);
+    }
+
     public function store($data)
     {
-        Auth::requireAuth();
-
         $validator = new Validator();
         $validator->field('content', $data['content'])->min(3)->max(1000)->required();
         $validator->field('post_id', $data['post_id'])->required();
@@ -22,9 +26,7 @@ class CommentController
             $data['user_id'] = Auth::id();
             date_default_timezone_set('America/New_York');
             $data['created_at'] = date('Y-m-d H:i:s');
-
             $insertComment = $comment->insert($data);
-
             if ($insertComment) {
                 return View::redirect('post/show?id=' . $data['post_id']);
             } else {
@@ -37,25 +39,25 @@ class CommentController
 
     public function delete($data)
     {
-        Auth::requireAuth();
+        if (Auth::has_privilege(3)) {
+            if (isset($data['id']) && isset($data['post_id'])) {
+                $comment = new Comment();
+                $selectedComment = $comment->selectId($data['id']);
 
-        if (isset($data['id']) && isset($data['post_id'])) {
-            $comment = new Comment();
-            $selectedComment = $comment->selectId($data['id']);
+                if ($selectedComment && $selectedComment['user_id'] == Auth::id()) {
+                    $deleteComment = $comment->delete($data['id']);
 
-            if ($selectedComment && $selectedComment['user_id'] == Auth::id()) {
-                $deleteComment = $comment->delete($data['id']);
-
-                if ($deleteComment) {
-                    return View::redirect('post/show?id=' . $data['post_id']);
+                    if ($deleteComment) {
+                        return View::redirect('post/show?id=' . $data['post_id']);
+                    } else {
+                        return View::render('error', ['message' => 'Could not delete comment!']);
+                    }
                 } else {
-                    return View::render('error', ['message' => 'Could not delete comment!']);
+                    return View::render('error', ['message' => 'Comment not found or unauthorized!']);
                 }
             } else {
-                return View::render('error', ['message' => 'Comment not found or unauthorized!']);
+                return View::render('error', ['message' => 'Invalid request!']);
             }
-        } else {
-            return View::render('error', ['message' => 'Invalid request!']);
         }
     }
 }

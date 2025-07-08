@@ -12,6 +12,11 @@ use App\Models\Comment;
 class PostController
 {
 
+    public function construct(){
+        Auth::requireAuth();
+        Auth::privilege(3);
+    }
+
     public function index()
     {
         $post = new Post();
@@ -42,8 +47,7 @@ class PostController
 
     public function create()
     {
-        Auth::requireAuth();
-
+        self::construct();
         $category = new Category();
         $categories = $category->select();
         return View::render('post/create', ['categories' => $categories]);
@@ -51,8 +55,7 @@ class PostController
 
     public function store($data)
     {
-        Auth::requireAuth();
-
+        self::construct();
         $validator = new Validator();
         $validator->field('title', $data['title'])->min(2)->max(255)->required();
         $validator->field('content', $data['content'])->min(10)->required();
@@ -64,7 +67,6 @@ class PostController
             date_default_timezone_set('America/New_York');
             $data['created_at'] = date('Y-m-d H:i:s');
             $insertPost = $post->insert($data);
-
             if ($insertPost) {
                 return View::redirect('post/show?id=' . $insertPost);
             } else {
@@ -80,8 +82,7 @@ class PostController
 
     public function edit($data)
     {
-        Auth::requireAuth();
-
+        self::construct();
         if (isset($data['id']) && $data['id'] != null) {
             $post = new Post();
             $selectedPost = $post->selectId($data['id']);
@@ -99,8 +100,7 @@ class PostController
 
     public function update($data, $params)
     {
-        Auth::requireAuth();
-
+        self::construct();
         if (isset($params['id']) && $params['id'] != null) {
             $validator = new Validator();
             $validator->field('title', $data['title'])->min(2)->max(255)->required();
@@ -110,7 +110,6 @@ class PostController
             if ($validator->isSuccess()) {
                 $post = new Post();
                 $updatePost = $post->update($data, $params['id']);
-
                 if ($updatePost) {
                     return View::redirect('post/show?id=' . $params['id']);
                 } else {
@@ -131,22 +130,21 @@ class PostController
 
     public function delete($data)
     {
-        Auth::requireAuth();
+        if (Auth::has_privilege(2)) {
+            if (isset($data['id']) && $data['id'] != null) {
+                $comment = new Comment();
+                $this->deleteCommentsByPostId($comment, $data['id']);
 
-        if (isset($data['id']) && $data['id'] != null) {
-            $comment = new Comment();
-            $this->deleteCommentsByPostId($comment, $data['id']);
-
-            $post = new Post();
-            $deletePost = $post->delete($data['id']);
-
-            if ($deletePost) {
-                return View::redirect('posts');
+                $post = new Post();
+                $deletePost = $post->delete($data['id']);
+                if ($deletePost) {
+                    return View::redirect('posts');
+                } else {
+                    return View::render('error', ['message' => 'Could not delete post!']);
+                }
             } else {
-                return View::render('error', ['message' => 'Could not delete post!']);
+                return View::render('error', ['message' => '404 not found!']);
             }
-        } else {
-            return View::render('error', ['message' => '404 not found!']);
         }
     }
 

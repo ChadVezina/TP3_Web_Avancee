@@ -8,20 +8,20 @@ use App\Providers\Auth;
 
 class View
 {
-    static public function render($template, $data = [])
+    public static function render($template, $data = [])
     {
         $loader = new FilesystemLoader('views');
         $twig = new Environment($loader);
         $twig->addGlobal('asset', ASSET);
         $twig->addGlobal('base', BASE);
         $twig->addGlobal('logged_in', Auth::check());
-        $twig->addGlobal('current_user', Auth::username());
-        $twig->addGlobal('auth_user', Auth::user());
-
-        echo $twig->render($template . ".php", $data);
+        $twig->addGlobal('auth_user_id', Auth::id());
+        $twig->addGlobal('auth_privilege_id', Auth::privilege_id());
+        $twig->addGlobal('session', $_SESSION);
+        echo $twig->render("{$template}.php", $data);
     }
 
-    static public function redirect($url)
+    public static function redirect($url)
     {
         header('location:' . BASE . '/' . $url);
     }

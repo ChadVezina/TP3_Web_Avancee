@@ -1,4 +1,3 @@
 <?php
-define('BASE', '/web_avancee/TP2/mvc');
-define('ASSET', '/web_avancee/TP2/mvc/public/');
-?>
+define('BASE', '/web_avancee/TP3/mvc');
+define('ASSET', '/web_avancee/TP3/mvc/public/');

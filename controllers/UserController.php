@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Providers\View;
 use App\Providers\Validator;
-use App\Providers\Auth;
+use App\Models\Privilege;
 use App\Models\User;
 
 class UserController
@@ -12,18 +12,18 @@ class UserController
 
     public function create()
     {
-        Auth::requireGuest();
-        return View::render('user/create');
+        $privilege = new Privilege;
+        $privileges = $privilege->select(); 
+        return View::render('user/create', ['privileges' => $privileges]);
     }
 
     public function store($data)
     {
-        Auth::requireGuest();
-
         $validator = new Validator;
         $validator->field('username', $data['username'])->min(2)->max(50)->required()->unique('User');
         $validator->field('email', $data['email'])->min(2)->max(100)->required()->email()->unique('User');
         $validator->field('password', $data['password'])->min(6)->max(20)->required();
+        $validator->field('privilege_id', $data['privilege_id'], 'Privilege')->required();
 
         if ($validator->isSuccess()) {
             $user = new User;
@@ -38,7 +38,9 @@ class UserController
             }
         } else {
             $errors = $validator->getErrors();
-            return View::render('user/create', ['errors' => $errors, 'user' => $data]);
+            $privilege = new Privilege;
+            $privileges = $privilege->select();
+            return View::render('user/create', ['errors' => $errors, 'user' => $data,'privileges' => $privileges]);
         }
     }
 }

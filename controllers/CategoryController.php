@@ -10,6 +10,11 @@ use App\Models\Post;
 
 class CategoryController
 {
+    
+    public function __construct(){
+        Auth::requireAuth();
+        Auth::privilege(2);
+    }
 
     public function index()
     {
@@ -27,7 +32,6 @@ class CategoryController
             if ($selectedCategory) {
                 $post = new Post();
                 $posts = $this->getPostsByCategory($post, $data['id']);
-
                 return View::render('category/show', [
                     'category' => $selectedCategory,
                     'posts' => $posts
@@ -58,21 +62,17 @@ class CategoryController
 
     public function create()
     {
-        Auth::requireAuth();
         return View::render('category/create');
     }
 
     public function store($data)
     {
-        Auth::requireAuth();
-
         $validator = new Validator();
         $validator->field('name', $data['name'])->min(2)->max(100)->required();
 
         if ($validator->isSuccess()) {
             $category = new Category();
             $insertCategory = $category->insert($data);
-
             if ($insertCategory) {
                 return View::redirect('categories');
             } else {
@@ -86,8 +86,6 @@ class CategoryController
 
     public function edit($data)
     {
-        Auth::requireAuth();
-
         if (isset($data['id']) && $data['id'] != null) {
             $category = new Category();
             $selectedCategory = $category->selectId($data['id']);
@@ -103,8 +101,6 @@ class CategoryController
 
     public function update($data, $params)
     {
-        Auth::requireAuth();
-
         if (isset($params['id']) && $params['id'] != null) {
             $validator = new Validator();
             $validator->field('name', $data['name'])->min(2)->max(100)->required();
@@ -112,7 +108,6 @@ class CategoryController
             if ($validator->isSuccess()) {
                 $category = new Category();
                 $updateCategory = $category->update($data, $params['id']);
-
                 if ($updateCategory) {
                     return View::redirect('categories');
                 } else {
@@ -131,28 +126,25 @@ class CategoryController
 
     public function delete($data)
     {
-        Auth::requireAuth();
-
-        if (isset($data['id']) && $data['id'] != null) {
-            $post = new Post();
-            $postsInCategory = $this->getPostsByCategory($post, $data['id']);
-
-            if (!empty($postsInCategory)) {
-                return View::render('error', [
-                    'message' => 'Cannot delete category because it contains ' . count($postsInCategory) . ' post(s). Please delete or move the posts first.'
-                ]);
-            }
-
-            $category = new Category();
-            $deleteCategory = $category->delete($data['id']);
-
-            if ($deleteCategory) {
-                return View::redirect('categories');
+        if (Auth::has_privilege(1)) {
+            if (isset($data['id']) && $data['id'] != null) {
+                $post = new Post();
+                $postsInCategory = $this->getPostsByCategory($post, $data['id']);
+                if (!empty($postsInCategory)) {
+                    return View::render('error', [
+                        'message' => 'Cannot delete category because it contains ' . count($postsInCategory) . ' post(s). Please delete or move the posts first.'
+                    ]);
+                }
+                $category = new Category();
+                $deleteCategory = $category->delete($data['id']);
+                if ($deleteCategory) {
+                    return View::redirect('categories');
+                } else {
+                    return View::render('error', ['message' => 'Could not delete category!']);
+                }
             } else {
-                return View::render('error', ['message' => 'Could not delete category!']);
+                return View::render('error', ['message' => '404 not found!']);
             }
-        } else {
-            return View::render('error', ['message' => '404 not found!']);
         }
     }
 }

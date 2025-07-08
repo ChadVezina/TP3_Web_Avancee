@@ -47,7 +47,7 @@
                             <strong style="color: #333;">{{ comment.author_name ?? 'Unknown User' }}</strong>
                             <span style="color: #666; font-size: 0.9em; margin-left: 10px;">{{ comment.created_at }}</span>
                         </div>
-                        {% if logged_in and auth_user.id == comment.user_id %}
+                        {% if logged_in and auth_user_id == comment.user_id %}
                         <form action="{{ base }}/comment/delete" method="post" style="margin: 0;">
                             <input type="hidden" name="id" value="{{ comment.id }}">
                             <input type="hidden" name="post_id" value="{{ post.id }}">

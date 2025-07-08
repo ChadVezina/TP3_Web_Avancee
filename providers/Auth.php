@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\User;
+use App\Providers\View;
 
 class Auth
 {
@@ -12,7 +12,14 @@ class Auth
      */
     public static function check()
     {
-        return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
+        return isset($_SESSION['fingerPrint']) AND $_SESSION['fingerPrint'] == md5($_SERVER['HTTP_USER_AGENT'].$_SERVER['REMOTE_ADDR']);
+    }
+
+    /**
+     * Check if user has the min privilege
+     */
+    public static function has_privilege($id){
+        return $_SESSION['privilege_id'] <= $id;
     }
 
     /**
@@ -39,6 +46,14 @@ class Auth
     }
 
     /**
+     * Get the authenticated user's privilege ID
+     */
+    public static function privilege_id()
+    {
+        return self::check() ? $_SESSION['privilege_id'] : 3;
+    }
+
+    /**
      * Get the authenticated user's username
      */
     public static function username()
@@ -47,38 +62,10 @@ class Auth
     }
 
     /**
-     * Attempt to authenticate a user
-     */
-    public static function attempt($username, $password)
-    {
-        $userModel = new User();
-        $foundUser = $userModel->unique('username', $username);
-
-        if ($foundUser && password_verify($password, $foundUser['password'])) {
-            self::login($foundUser);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Log in a user
-     */
-    public static function login($user)
-    {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['email'] = $user['email'];
-        $_SESSION['logged_in'] = true;
-    }
-
-    /**
      * Log out the current user
      */
     public static function logout()
     {
-
         $_SESSION = [];
 
         if (ini_get("session.use_cookies")) {
@@ -98,19 +85,11 @@ class Auth
     }
 
     /**
-     * Check if user is guest (not authenticated)
-     */
-    public static function guest()
-    {
-        return !self::check();
-    }
-
-    /**
      * Require authentication - redirect to login if not authenticated
      */
     public static function requireAuth()
     {
-        if (self::guest()) {
+        if (!self::check()) {
             View::redirect('login');
             exit;
         }
@@ -124,6 +103,12 @@ class Auth
         if (self::check()) {
             View::redirect('posts');
             exit;
+        }
+    }
+    public static function privilege($id){
+        if(!self::has_privilege($id)){
+            View::redirect('login');
+            exit();
         }
     }
 }

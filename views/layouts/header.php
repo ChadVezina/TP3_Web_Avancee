@@ -14,7 +14,7 @@
 <body>
     <header>
         <nav>
-            <a href="{{base}}/posts" class="nav-brand">
+            <a href="{{base}}" class="nav-brand">
                 <span class="logo">📝</span>
                 <span>The Modern Blogger</span>
             </a>

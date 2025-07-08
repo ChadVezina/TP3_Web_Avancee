@@ -4,6 +4,7 @@ use App\Routes\Route;
 
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index');
+Route::get('/home/index', 'HomeController@index');
 
 // Post routes
 Route::get('/posts', 'PostController@index');
