@@ -2,40 +2,40 @@
 
 <div class="activity-log-container">
     <div class="activity-log-header">
-        <h1 class="activity-log-title">📊 Journal de bord</h1>
-        
+        <h1 class="activity-log-title">📊 {{t('logs.title')}}</h1>
+
         <div class="activity-log-actions">
-            <!-- Options de suppression -->
             <div class="clear-logs-dropdown">
                 <button class="btn red">
-                    🗑️ Nettoyer les logs
+                    🗑️ {{t('logs.clear')}}
                     <span style="font-size: 0.8em;">▼</span>
                 </button>
                 <div class="clear-logs-menu">
                     <div class="clear-logs-menu-items">
                         <a href="{{ base }}/activity-logs/clear?type=10" class="clear-logs-item" onclick="return confirm('Êtes-vous sûr de vouloir supprimer les 10 logs les plus anciens ?')">
-                            🗑️ Supprimer 10 plus anciens
+                            🗑️ {{t('logs.delete10')}}
                         </a>
                         <a href="{{ base }}/activity-logs/clear?type=50" class="clear-logs-item" onclick="return confirm('Êtes-vous sûr de vouloir supprimer les 50 logs les plus anciens ?')">
-                            🗑️ Supprimer 50 plus anciens
+                            🗑️ {{t('logs.delete50')}}
                         </a>
                         <a href="{{ base }}/activity-logs/clear?type=100" class="clear-logs-item" onclick="return confirm('Êtes-vous sûr de vouloir supprimer les 100 logs les plus anciens ?')">
-                            🗑️ Supprimer 100 plus anciens
+                            🗑️ {{t('logs.delete100')}}
                         </a>
                         <a href="{{ base }}/activity-logs/clear?type=500" class="clear-logs-item" onclick="return confirm('Êtes-vous sûr de vouloir supprimer les 500 logs les plus anciens ?')">
-                            🗑️ Supprimer 500 plus anciens
+                            🗑️ {{t('logs.delete500')}}
                         </a>
                         <a href="{{ base }}/activity-logs/clear?type=old" class="clear-logs-item" onclick="return confirm('Êtes-vous sûr de vouloir supprimer tous les logs de plus de 6 mois ?')">
-                            🗑️ Supprimer logs > 6 mois
+                            🗑️ {{t('logs.delete_old')}}
                         </a>
                         <a href="{{ base }}/activity-logs/clear?type=all" class="clear-logs-item danger" onclick="return confirm('⚠️ ATTENTION ⚠️\n\nCette action supprimera TOUS les logs de manière définitive.\n\nÊtes-vous absolument certain de vouloir continuer ?')">
-                            ⚠️ Supprimer TOUS les logs
+                            ⚠️ {{t('logs.delete_all')}}
                         </a>
                     </div>
                 </div>
             </div>
-            
-            <a href="{{ base }}/activity-logs" class="btn secondary">🔄 Actualiser</a>
+
+            <a href="{{ base }}/activity-logs" class="btn secondary">🔄 {{t('logs.refresh')}}</a>
+            <a href="{{ base }}/user/admin-create" class="btn primary">👑 {{t('logs.create_admin')}}</a>
         </div>
     </div>
 
@@ -47,7 +47,7 @@
 
     <div class="activity-log-card">
         <div class="activity-log-card-header">
-            <h3 class="activity-log-card-title">📋 Activités récentes ({{ totalLogs }} total)</h3>
+            <h3 class="activity-log-card-title">📋 {{t('logs.recent_activities')}} ({{ totalLogs }} total)</h3>
         </div>
 
         {% if logs %}
@@ -55,25 +55,25 @@
             <table class="activity-log-table">
                 <thead>
                     <tr>
-                        <th style="width: 120px;">📅 Date</th>
-                        <th style="width: 100px;">👤 Utilisateur</th>
-                        <th style="width: 200px;">🎯 Action</th>
-                        <th style="width: 150px;">📍 URL</th>
-                        <th style="width: 140px;">🌐 Adresse IP</th>
-                        <th style="width: 200px;">🖥️ User Agent</th>
+                        <th style="width: 120px;">📅 {{t('logs.table_date')}}</th>
+                        <th style="width: 100px;">👤 {{t('logs.table_user')}}</th>
+                        <th style="width: 200px;">🎯 {{t('logs.table_action')}}</th>
+                        <th style="width: 150px;">📍 {{t('logs.table_url')}}</th>
+                        <th style="width: 140px;">🌐 {{t('logs.table_ip')}}</th>
+                        <th style="width: 200px;">🖥️ {{t('logs.table_user_agent')}}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for log in logs %}
                     {% set badgeClass = 'default' %}
                     {% if 'Échec' in log.action or 'suppression' in log.action %}
-                        {% set badgeClass = 'error' %}
+                    {% set badgeClass = 'error' %}
                     {% elseif 'création' in log.action %}
-                        {% set badgeClass = 'create' %}
+                    {% set badgeClass = 'create' %}
                     {% elseif 'modification' in log.action %}
-                        {% set badgeClass = 'edit' %}
+                    {% set badgeClass = 'edit' %}
                     {% endif %}
-                    
+
                     <tr>
                         <td class="activity-log-date">
                             {{ log.created_at|date('d/m/Y H:i') }}
@@ -106,15 +106,15 @@
         <div class="activity-log-pagination">
             <div class="activity-log-pagination-controls">
                 {% if currentPage > 1 %}
-                <a href="{{ base }}/activity-logs?page={{ currentPage - 1 }}" class="btn secondary" style="padding: 8px 12px;">← Précédent</a>
+                <a href="{{ base }}/activity-logs?page={{ currentPage - 1 }}" class="btn secondary" style="padding: 8px 12px;">{{t('logs.previous_page')}}</a>
                 {% endif %}
-                
+
                 <span class="activity-log-pagination-info">
                     Page {{ currentPage }} sur {{ totalPages }}
                 </span>
-                
+
                 {% if currentPage < totalPages %}
-                <a href="{{ base }}/activity-logs?page={{ currentPage + 1 }}" class="btn secondary" style="padding: 8px 12px;">Suivant →</a>
+                <a href="{{ base }}/activity-logs?page={{ currentPage + 1 }}" class="btn secondary" style="padding: 8px 12px;">{{t('logs.next_page')}}</a>
                 {% endif %}
             </div>
         </div>
@@ -122,8 +122,8 @@
         {% else %}
         <div class="activity-log-empty">
             <div class="activity-log-empty-icon">📊</div>
-            <h3>Aucune activité enregistrée</h3>
-            <p>Le journal de bord est vide.</p>
+            <h3>{{t('logs.empty')}}</h3>
+            <p>{{t('logs.empty_message')}}</p>
         </div>
         {% endif %}
     </div>

@@ -2,8 +2,8 @@
 <div class="form-container">
     <div class="form-header">
         <div class="icon">👋</div>
-        <h2>Join Our Community</h2>
-        <p>Create your account to get started</p>
+        <h2>{{t('register.title')}}</h2>
+        <p>{{t('register.connect_message')}}</p>
     </div>
 
     <div class="form-body">
@@ -19,28 +19,28 @@
 
         <form method="post">
             <div class="form-group">
-                <label for="username">👤 Username</label>
-                <input type="text" id="username" name="username" value="{{ user.username }}" placeholder="Choose a unique username" required>
+                <label for="username">👤 {{t('register.username')}}</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" placeholder="{{t('register.username_placeholder')}}" required>
             </div>
 
             <div class="form-group">
-                <label for="email">📧 Email Address</label>
-                <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="Enter your email address" required>
+                <label for="email">📧 {{t('register.email')}}</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="{{t('register.email_placeholder')}}" required>
             </div>
 
             <div class="form-group">
-                <label for="password">🔒 Password</label>
-                <input type="password" id="password" name="password" placeholder="Create a secure password (min 8 characters)" required>
+                <label for="password">🔒 {{t('register.password')}}</label>
+                <input type="password" id="password" name="password" placeholder="{{t('register.password_placeholder')}}" required>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn primary block">🎉 Create Account</button>
+                <button type="submit" class="btn primary block">🎉 {{t('register.create_account')}}</button>
             </div>
         </form>
     </div>
 
     <div class="form-footer">
-        <p>Already have an account? <a href="{{ base }}/login">Sign in here</a></p>
+        <p>{{t('register.already_have_account')}} <a href="{{ base }}/login">{{t('register.login_here')}}</a></p>
     </div>
 </div>
 {{ include('layouts/footer.php')}}

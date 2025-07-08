@@ -2,14 +2,14 @@
 <div class="form-container">
     <div class="form-header">
         <div class="icon">✏️</div>
-        <h1>Edit Category</h1>
-        <p style="margin: 10px 0 0 0; opacity: 0.9; font-weight: 300;">Update category information</p>
+        <h1>{{t('categories.title')}}</h1>
+        <p style="margin: 10px 0 0 0; opacity: 0.9; font-weight: 300;">{{t('categories.edit_description')}}</p>
     </div>
 
     <div class="form-body">
         <form method="post">
             <div class="form-group">
-                <label for="name">🏷️ Category Name</label>
+                <label for="name">🏷️ {{t('categories.name')}}</label>
                 <input type="text" id="name" name="name" value="{{category.name}}" required>
                 {% if errors.name is defined %}
                 <span class="field-error">{{errors.name}}</span>
@@ -17,8 +17,8 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn primary">💾 Update Category</button>
-                <a href="{{ base }}/categories" class="btn secondary">❌ Cancel</a>
+                <button type="submit" class="btn primary">💾 {{t('categories.edit')}}</button>
+                <a href="{{ base }}/categories" class="btn secondary">❌ {{t('categories.cancel')}}</a>
             </div>
         </form>
     </div>

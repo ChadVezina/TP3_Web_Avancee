@@ -2,8 +2,8 @@
 <div class="form-container">
     <div class="form-header">
         <div class="icon">🔐</div>
-        <h2>Welcome Back</h2>
-        <p>Sign in to your account</p>
+        <h2>{{t('login.welcome')}}</h2>
+        <p>{{t('login.connect_message')}}</p>
     </div>
 
     <div class="form-body">
@@ -31,23 +31,23 @@
 
         <form method="post">
             <div class="form-group">
-                <label for="username">👤 Username</label>
-                <input type="text" id="username" name="username" value="{{ user.username }}" placeholder="Enter your username" required>
+                <label for="username">👤 {{t('login.username')}}</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" placeholder="{{t('login.username_placeholder')}}" required>
             </div>
 
             <div class="form-group">
-                <label for="password">🔒 Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <label for="password">🔒 {{t('login.password')}}</label>
+                <input type="password" id="password" name="password" placeholder="{{t('login.password_placeholder')}}" required>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn primary block">🚀 Sign In</button>
+                <button type="submit" class="btn primary block">🚀 {{t('login.signin')}}</button>
             </div>
         </form>
     </div>
 
     <div class="form-footer">
-        <p>Don't have an account? <a href="{{ base }}/user/create">Create one here</a></p>
+        <p>{{t('login.no_account_message')}}<a href="{{ base }}/user/create">{{t('login.create')}}</a></p>
     </div>
 </div>
 {{ include('layouts/footer.php')}}

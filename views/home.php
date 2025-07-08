@@ -1,22 +1,22 @@
-{{ include('layouts/header.php', {title: 'Accueil'})}}
+{{ include('layouts/header.php', {title: t('page.home')})}}
 
 <!-- Hero Section -->
 <section class="hero">
    <div class="container">
       <div class="hero-content">
          <h1 class="hero-title">
-            Bienvenue sur <span class="text-primary">The Modern Blogger</span>
+            {{ t('misc.welcome') }} {{ t('misc.site_title') }} <span class="text-primary">{{ t('misc.site_title') }}</span>
          </h1>
          <p class="hero-subtitle">
-            Découvrez des articles passionnants, partagez vos idées et rejoignez notre communauté de blogueurs passionnés.
+            {{ t('hero.subtitle') }}
          </p>
          <div class="hero-actions">
             {% if logged_in %}
-            <a href="{{base}}/post/create" class="btn-solid">✍️ Écrire un article</a>
-            <a href="{{base}}/posts" class="btn-outline">📚 Parcourir les posts</a>
+            <a href="{{ lang_url('post/create') }}" class="btn-solid">✍️ {{ t('btn.create') }}</a>
+            <a href="{{ lang_url('posts') }}" class="btn-outline">📚 {{ t('nav.posts') }}</a>
             {% else %}
-            <a href="{{base}}/user/create" class="btn-solid">🎉 Rejoindre</a>
-            <a href="{{base}}/posts" class="btn-outline">📚 Découvrir</a>
+            <a href="{{ lang_url('user/create') }}" class="btn-solid">🎉 {{ t('nav.register') }}</a>
+            <a href="{{ lang_url('posts') }}" class="btn-outline">📚 {{ t('nav.posts') }}</a>
             {% endif %}
          </div>
       </div>
@@ -26,22 +26,24 @@
 <!-- Statistics Section -->
 <section class="stats">
    <div class="container">
-      <h2 class="section-title">Notre Communauté</h2>
+      <h2 class="section-title">
+         {{ t('stats.our_community') }}
+      </h2>
       <div class="stats-grid">
          <div class="stat-card">
             <div class="stat-icon">📝</div>
             <div class="stat-number">{{ totalPosts }}</div>
-            <div class="stat-label">Articles publiés</div>
+            <div class="stat-label">{{ t('stats.published_articles') }}</div>
          </div>
          <div class="stat-card">
             <div class="stat-icon">📁</div>
             <div class="stat-number">{{ totalCategories }}</div>
-            <div class="stat-label">Catégories</div>
+            <div class="stat-label">{{ t('stats.categories') }}</div>
          </div>
          <div class="stat-card">
             <div class="stat-icon">👥</div>
             <div class="stat-number">{{ totalUsers }}</div>
-            <div class="stat-label">Auteurs</div>
+            <div class="stat-label">{{ t('stats.authors') }}</div>
          </div>
       </div>
    </div>
@@ -51,7 +53,9 @@
 {% if categories %}
 <section class="categories-preview">
    <div class="container">
-      <h2 class="section-title">Explorez par Catégorie</h2>
+      <h2 class="section-title">
+         {{ t('nav.home_categories') }}
+      </h2>
       <div class="categories-grid">
          {% for category in categories %}
          <a href="{{base}}/posts?category={{ category.id }}" class="category-card">
@@ -69,8 +73,10 @@
 <section class="recent-posts">
    <div class="container">
       <div class="section-header">
-         <h2 class="section-title">Articles Récents</h2>
-         <a href="{{base}}/posts" class="btn-outline">Voir tous les articles</a>
+         <h2 class="section-title">
+            {{ t('recent_posts.title') }}
+         </h2>
+         <a href="{{base}}/posts" class="btn-outline">{{ t('recent_posts.view_all')}}</a>
       </div>
       <div class="posts-grid">
          {% for post in recentPosts %}
@@ -101,13 +107,15 @@
 <section class="cta">
    <div class="container">
       <div class="cta-content">
-         <h2 class="cta-title">Prêt à partager vos idées ?</h2>
+         <h2 class="cta-title">
+            {{ t('cta.title') }}
+         </h2>
          <p class="cta-subtitle">
-            Rejoignez notre communauté de blogueurs et commencez à publier vos articles dès aujourd'hui.
+            {{ t('cta.subtitle') }}
          </p>
          <div class="cta-actions">
-            <a href="{{base}}/user/create" class="btn-solid">🎉 Créer un compte</a>
-            <a href="{{base}}/login" class="btn-outline">🔐 Se connecter</a>
+            <a href="{{base}}/user/create" class="btn-solid">🎉 {{t('cta.create_account')}}</a>
+            <a href="{{base}}/login" class="btn-outline">🔐 {{t('cta.login')}}</a>
          </div>
       </div>
    </div>

@@ -46,4 +46,7 @@ Route::get('/activity-logs', 'ActivityLogController@index');
 Route::get('/activity-logs/clear', 'ActivityLogController@clear');
 Route::post('/activity-logs/clear', 'ActivityLogController@clear');
 
+// Language routes
+Route::get('/language/switch', 'LanguageController@switch');
+
 Route::dispatch();

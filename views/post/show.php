@@ -6,10 +6,10 @@
             <h1 class="card-title" style="font-size: 2em; margin-bottom: 15px;">{{ post.title }}</h1>
             <div class="card-meta">
                 <div class="card-meta-item">
-                    <span class="card-badge category">📁 {{ post.category_name ?? 'No Category' }}</span>
+                    <span class="card-badge category">📁 {{ post.category_name ?? t('posts.no_categories') }}</span>
                 </div>
                 <div class="card-meta-item">
-                    <span class="card-badge author">👤 {{ post.author_name ?? 'Unknown Author' }}</span>
+                    <span class="card-badge author">👤 {{ post.author_name ?? t('posts.no_authors') }}</span>
                 </div>
                 <div class="card-meta-item">
                     <span class="card-badge date">📅 {{ post.created_at }}</span>
@@ -25,16 +25,16 @@
 
         <div class="card-actions">
             {% if logged_in %}
-            <a href="{{ base }}/post/edit?id={{ post.id }}" class="btn primary">✏️ Edit Post</a>
+            <a href="{{ base }}/post/edit?id={{ post.id }}" class="btn primary">✏️ {{t('action.update')}}</a>
             {% endif %}
-            <a href="{{ base }}/posts" class="btn">← Back to Posts</a>
+            <a href="{{ base }}/posts" class="btn">{{t('posts.back_to_posts')}}</a>
         </div>
     </article>
 
     <!-- Comments Section -->
     <div class="card">
         <div class="card-header">
-            <h3 style="margin: 0;">💬 Comments ({{ comments|length }})</h3>
+            <h3 style="margin: 0;">💬 {{t('comments.title')}} ({{ comments|length }})</h3>
         </div>
 
         <div class="card-content">
@@ -44,7 +44,7 @@
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                         <div>
-                            <strong style="color: #333;">{{ comment.author_name ?? 'Unknown User' }}</strong>
+                            <strong style="color: #333;">{{ comment.author_name ?? t('comments.unknown_user') }}</strong>
                             <span style="color: #666; font-size: 0.9em; margin-left: 10px;">{{ comment.created_at }}</span>
                         </div>
                         {% if logged_in and auth_user_id == comment.user_id %}
@@ -60,23 +60,23 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p style="color: #666; font-style: italic; text-align: center; padding: 20px;">No comments yet. Be the first to comment!</p>
+            <p style="color: #666; font-style: italic; text-align: center; padding: 20px;">{{t('comments.no_comments_message')}}</p>
             {% endif %}
 
             {% if logged_in %}
             <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                <h4 style="margin-top: 0; color: #333;">✍️ Add a Comment</h4>
+                <h4 style="margin-top: 0; color: #333;">✍️ {{t('comments.add')}}</h4>
                 <form action="{{ base }}/comment/store" method="post">
                     <input type="hidden" name="post_id" value="{{ post.id }}">
                     <label style="display: block; margin-bottom: 10px;">
-                        <textarea name="content" rows="4" placeholder="Write your comment here..." required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: Arial, sans-serif; resize: vertical;"></textarea>
+                        <textarea name="content" rows="4" placeholder="{{t('comments.placeholder')}}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: Arial, sans-serif; resize: vertical;"></textarea>
                     </label>
-                    <button type="submit" class="btn primary">💬 Post Comment</button>
+                    <button type="submit" class="btn primary">💬 {{t('comments.post')}}</button>
                 </form>
             </div>
             {% else %}
             <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffeaa7; text-align: center;">
-                <p style="margin: 0; color: #856404;">Please <a href="{{ base }}/login" style="color: #3498db; text-decoration: none; font-weight: bold;">login</a> to post a comment.</p>
+                <p style="margin: 0; color: #856404;"><a href="{{ base }}/login" style="color: #3498db; text-decoration: none; font-weight: bold;">{{t('comments.not_logged_in')}}</a></p>
             </div>
             {% endif %}
         </div>

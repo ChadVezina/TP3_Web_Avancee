@@ -2,8 +2,8 @@
 <div class="form-container">
     <div class="form-header">
         <div class="icon">👑</div>
-        <h2>Création d'utilisateur (Admin)</h2>
-        <p>Créer un nouvel utilisateur avec privilèges spécifiques</p>
+        <h2>{{t('admin.create_user')}}</h2>
+        <p>{{t('admin.create_user_description')}}</p>
     </div>
 
     <div class="form-body">
@@ -19,35 +19,35 @@
 
         <form method="post">
             <div class="form-group">
-                <label for="username">👤 Username</label>
-                <input type="text" id="username" name="username" value="{{ user.username }}" placeholder="Choose a unique username" required>
+                <label for="username">👤 {{t('admin.username')}}</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" placeholder="{{t('admin.username_placeholder')}}" required>
             </div>
 
             <div class="form-group">
-                <label for="email">📧 Email Address</label>
-                <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="Enter email address" required>
+                <label for="email">📧 {{t('admin.email')}}</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="{{t('admin.email_placeholder')}}" required>
             </div>
 
             <div class="form-group">
-                <label for="password">🔒 Password</label>
-                <input type="password" id="password" name="password" placeholder="Create a secure password (min 8 characters)" required>
+                <label for="password">🔒 {{t('admin.password')}}</label>
+                <input type="password" id="password" name="password" placeholder="{{t('admin.password_placeholder')}}" required>
             </div>
 
             <div class="form-group">
-                <label for="privilege_id">🎯 Privilege Level</label>
+                <label for="privilege_id">🎯 {{t('admin.privilege_id')}}</label>
                 <select id="privilege_id" name="privilege_id" required>
-                    <option value="">Sélectionner un niveau de privilège...</option>
+                    <option value="">{{t('admin.privilege_id_placeholder')}}</option>
                     {% for privilege in privileges %}
                     <option value="{{ privilege.id }}" {% if user.privilege_id == privilege.id %} selected {% endif %}>
-                        {% if privilege.id == 1 %}👑 Admin{% elseif privilege.id == 2 %}🛡️ Modérateur{% else %}👤 Utilisateur{% endif %} - {{ privilege.privilege }}
+                        {% if privilege.id == 1 %}{{t('admin.privilege_admin')}}{% elseif privilege.id == 2 %}{{t('admin.privilege_moderator')}}{% else %}{{t('admin.privilege_user')}}{% endif %} - {{ privilege.privilege }}
                     </option>
                     {% endfor %}
                 </select>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn primary block">👑 Créer l'utilisateur</button>
-                <a href="{{ base }}/activity-logs" class="btn secondary block">📊 Retour aux logs</a>
+                <button type="submit" class="btn primary block">{{t('admin.create_user_button')}}</button>
+                <a href="{{ base }}/activity-logs" class="btn secondary block">{{t('admin.back_to_logs')}}</a>
             </div>
         </form>
     </div>

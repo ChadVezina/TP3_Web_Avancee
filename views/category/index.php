@@ -1,9 +1,9 @@
 {{ include('layouts/header.php', {title: 'Categories'})}}
 <div style="max-width: 800px; margin: 0 auto;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 style="color: #333; margin: 0;">Categories</h1>
+        <h1 style="color: #333; margin: 0;">{{t('categories.title')}}</h1>
         {% if logged_in %}
-        <a href="{{ base }}/category/create" class="btn primary">➕ New Category</a>
+        <a href="{{ base }}/category/create" class="btn primary">➕{{t('categories.create')}}</a>
         {% endif %}
     </div>
 
@@ -16,12 +16,12 @@
             </div>
 
             <div class="card-actions">
-                <a href="{{ base }}/category/show?id={{ category.id }}" class="btn primary">👁️ View Posts</a>
+                <a href="{{ base }}/category/show?id={{ category.id }}" class="btn primary">👁️ {{t('categories.view_posts')}}</a>
                 {% if logged_in %}
-                <a href="{{ base }}/category/edit?id={{ category.id }}" class="btn">✏️ Edit</a>
+                <a href="{{ base }}/category/edit?id={{ category.id }}" class="btn">✏️ {{t('categories.edit')}}</a>
                 <form action="{{ base }}/category/delete" method="post" style="display: inline;">
                     <input type="hidden" name="id" value="{{ category.id }}">
-                    <button type="submit" class="btn red">🗑️ Delete</button>
+                    <button type="submit" class="btn red">🗑️{{t('categories.delete')}}</button>
                 </form>
                 {% endif %}
             </div>
@@ -30,10 +30,10 @@
     </div>
     {% else %}
     <div style="text-align: center; padding: 40px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-        <h3 style="color: #666;">No categories available</h3>
-        <p style="color: #999;">Create your first category to organize your posts!</p>
+        <h3 style="color: #666;">{{t('categories.no_categories')}}</h3>
+        <p style="color: #999;">{{t('categories.no_categories_message')}}</p>
         {% if logged_in %}
-        <a href="{{ base }}/category/create" class="btn primary">Create First Category</a>
+        <a href="{{ base }}/category/create" class="btn primary">{{t('categories.create_first')}}</a>
         {% endif %}
     </div>
     {% endif %}

@@ -11,15 +11,15 @@
                     {% if posts %}
                     {{ posts|length }} post{{ posts|length != 1 ? 's' : '' }} in this category
                     {% else %}
-                    No posts in this category yet
+                    {{t('categories.no_posts_in_category')}}
                     {% endif %}
                 </p>
             </div>
             <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <a href="{{ base }}/categories" class="btn secondary">← All Categories</a>
+                <a href="{{ base }}/categories" class="btn secondary">{{t('categories.all')}}</a>
                 {% if logged_in %}
-                <a href="{{ base }}/category/edit?id={{ category.id }}" class="btn">✏️ Edit Category</a>
-                <a href="{{ base }}/post/create" class="btn primary">✍️ New Post</a>
+                <a href="{{ base }}/category/edit?id={{ category.id }}" class="btn">✏️ {{t('categories.edit_description')}}</a>
+                <a href="{{ base }}/post/create" class="btn primary">✍️ {{t('posts.create')}}</a>
                 {% endif %}
             </div>
         </div>
@@ -50,12 +50,12 @@
             </div>
 
             <div class="card-actions">
-                <a href="{{ base }}/post/show?id={{ post.id }}" class="btn primary">👁️ Read More</a>
+                <a href="{{ base }}/post/show?id={{ post.id }}" class="btn primary">👁️ {{t('posts.view')}}</a>
                 {% if logged_in %}
-                <a href="{{ base }}/post/edit?id={{ post.id }}" class="btn">✏️ Edit</a>
+                <a href="{{ base }}/post/edit?id={{ post.id }}" class="btn">✏️ {{t('posts.edit')}}</a>
                 <form action="{{ base }}/post/delete" method="post" style="display: inline;">
                     <input type="hidden" name="id" value="{{ post.id }}">
-                    <button type="submit" class="btn red" onclick="return confirm('Are you sure you want to delete this post?')">🗑️ Delete</button>
+                    <button type="submit" class="btn red" onclick="return confirm('Are you sure you want to delete this post?')">🗑️ {{t('posts.delete')}}</button>
                 </form>
                 {% endif %}
             </div>
