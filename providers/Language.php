@@ -6,7 +6,7 @@ class Language
 {
     private static $currentLanguage = 'fr';
     private static $translations = [];
-    private static $supportedLanguages = ['fr', 'en'];
+    private static $supportedLanguages = ['fr', 'en', 'es'];
 
     /**
      * Initialiser le système de langue

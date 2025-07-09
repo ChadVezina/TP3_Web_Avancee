@@ -47,7 +47,7 @@
                     <select onchange="switchLanguage(this.value)" class="language-select">
                         {% for lang in supported_languages %}
                         <option value="{{ lang }}" {% if lang == current_language %}selected{% endif %}>
-                            {% if lang == 'fr' %}🇫🇷 Français{% else %}🇺🇸 English{% endif %}
+                            {% if lang == 'fr' %}🇫🇷 Français{% elseif lang == 'es' %}🇪🇸 Español{% else %}🇺🇸 English{% endif %}
                         </option>
                         {% endfor %}
                     </select>
